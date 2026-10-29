@@ -1,0 +1,27 @@
+{
+  "name": "ILL Member Portal",
+  "short_name": "ILL",
+  "description": "Track payment requests, submit payment proofs and follow your balance.",
+  "start_url": "/user/payment-requests",
+  "scope": "/",
+  "id": "/user/payment-requests",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0891b2",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
