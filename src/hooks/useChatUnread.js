@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 
-const POLL_MS = 30000
 const MAX_INBOX_PAGES = 5
 const READ_EVENT = 'ill:chat-read'
 
@@ -27,7 +26,7 @@ async function readUnreadCount(isUser) {
   return total
 }
 
-export function useChatUnread({ enabled = true, pollMs = POLL_MS } = {}) {
+export function useChatUnread({ enabled = true } = {}) {
   const { isUser } = useAuth()
   const [unread, setUnread] = useState(0)
 
@@ -46,16 +45,19 @@ export function useChatUnread({ enabled = true, pollMs = POLL_MS } = {}) {
       return undefined
     }
     refresh()
-    const timer = setInterval(refresh, pollMs)
-    const handleRefresh = () => refresh()
+    const handleRefresh = () => {
+      if (document.hidden) return
+      refresh()
+    }
     window.addEventListener('focus', handleRefresh)
     window.addEventListener(READ_EVENT, handleRefresh)
+    document.addEventListener('visibilitychange', handleRefresh)
     return () => {
-      clearInterval(timer)
       window.removeEventListener('focus', handleRefresh)
       window.removeEventListener(READ_EVENT, handleRefresh)
+      document.removeEventListener('visibilitychange', handleRefresh)
     }
-  }, [enabled, pollMs, refresh])
+  }, [enabled, refresh])
 
   return { unread, refresh }
 }

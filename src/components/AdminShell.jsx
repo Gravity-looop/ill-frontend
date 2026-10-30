@@ -1,20 +1,17 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Banknote, ClipboardCheck, CreditCard, LayoutDashboard, LogOut, Menu, MessagesSquare, ReceiptText, Users, WalletCards, X } from 'lucide-react'
-import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
-import { useChatUnread } from '../hooks/useChatUnread'
-import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus'
 import { Avatar, Button, IconButton, cn } from './ui'
 
 const navigation = [
-  { key: 'overview', label: 'Overview', path: '/admin/dashboard', icon: LayoutDashboard },
-  { key: 'requests', label: 'Payment Master', path: '/admin/payment-requests', icon: CreditCard },
-  { key: 'submissions', label: 'Submissions', path: '/admin/submissions', icon: ClipboardCheck },
-  { key: 'withdrawals', label: 'Withdrawals', path: '/admin/withdrawals', icon: Banknote },
-  { key: 'users', label: 'Users', path: '/admin/users', icon: Users },
-  { key: 'balance', label: 'Balance history', path: '/admin/balance-history', icon: WalletCards },
-  { key: 'chat', label: 'Chat', path: '/admin/chat', icon: MessagesSquare },
+  { label: 'Overview', path: '/admin/dashboard', icon: LayoutDashboard },
+  { label: 'Payment Master', path: '/admin/payment-requests', icon: CreditCard },
+  { label: 'Submissions', path: '/admin/submissions', icon: ClipboardCheck },
+  { label: 'Withdrawals', path: '/admin/withdrawals', icon: Banknote },
+  { label: 'Users', path: '/admin/users', icon: Users },
+  { label: 'Balance history', path: '/admin/balance-history', icon: WalletCards },
+  { label: 'Chat', path: '/admin/chat', icon: MessagesSquare },
 ]
 
 const pageNames = {
@@ -46,13 +43,6 @@ export default function AdminShell() {
   const { logout, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { unread } = useChatUnread()
-  const fetchWithdrawalSummary = useCallback(() => api.adminWithdrawalSummary(), [])
-  const { summary: withdrawalSummary } = useRefreshOnFocus(fetchWithdrawalSummary)
-  const counts = {
-    chat: unread,
-    withdrawals: withdrawalSummary?.pending_count ?? 0,
-  }
   const pageName = pageNames[location.pathname] || 'Admin console'
 
   const handleLogout = async () => {
@@ -71,28 +61,20 @@ export default function AdminShell() {
       <div className="px-4 pt-5">
         <p className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Workspace</p>
         <nav className="mt-3 space-y-1">
-          {navigation.map(({ key, label, path, icon: Icon }) => {
-            const count = counts[key] ?? 0
-            return (
-              <NavLink
-                key={path}
-                to={path}
-                onClick={() => setMobileOpen(false)}
-                className={({ isActive }) => cn(
-                  'group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition',
-                  isActive ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:bg-white/5 hover:text-slate-100',
-                )}
-              >
-                <Icon size={18} strokeWidth={1.9} />
-                {label}
-                {count > 0 ? (
-                  <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5 text-[10px] font-bold text-white">
-                    {count > 99 ? '99+' : count}
-                  </span>
-                ) : null}
-              </NavLink>
-            )
-          })}
+          {navigation.map(({ label, path, icon: Icon }) => (
+            <NavLink
+              key={path}
+              to={path}
+              onClick={() => setMobileOpen(false)}
+              className={({ isActive }) => cn(
+                'group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition',
+                isActive ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:bg-white/5 hover:text-slate-100',
+              )}
+            >
+              <Icon size={18} strokeWidth={1.9} />
+              {label}
+            </NavLink>
+          ))}
         </nav>
       </div>
       <div className="mt-auto border-t border-white/10 p-4">

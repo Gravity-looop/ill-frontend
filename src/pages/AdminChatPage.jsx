@@ -6,9 +6,6 @@ import { notifyChatRead } from '../hooks/useChatUnread'
 import { ChatComposer, ChatMessageList, fetchLatestThread, mergeMessages, senderName } from '../components/ChatThread'
 import { Avatar, Badge, Button, Card, EmptyState, ErrorState, formatAmount, IconButton, Input, LoadingState, Notice, Pagination, cn } from '../components/ui'
 
-const THREAD_POLL_MS = 20000
-const INBOX_POLL_MS = 30000
-
 function formatListTime(value) {
   if (!value) return 'No messages'
   const date = new Date(value)
@@ -59,11 +56,6 @@ export default function AdminChatPage() {
 
   useEffect(() => { loadConversations() }, [loadConversations])
 
-  useEffect(() => {
-    const timer = setInterval(() => loadConversations({ silent: true }), INBOX_POLL_MS)
-    return () => clearInterval(timer)
-  }, [loadConversations])
-
   const userId = selectedUser?.id
 
   const loadThread = useCallback(async ({ silent = false } = {}) => {
@@ -96,10 +88,18 @@ export default function AdminChatPage() {
   }, [loadThread, userId])
 
   useEffect(() => {
-    if (!userId) return undefined
-    const timer = setInterval(() => loadThread({ silent: true }), THREAD_POLL_MS)
-    return () => clearInterval(timer)
-  }, [loadThread, userId])
+    const refreshOnWake = () => {
+      if (document.hidden) return
+      loadConversations({ silent: true })
+      if (userId) loadThread({ silent: true })
+    }
+    document.addEventListener('visibilitychange', refreshOnWake)
+    window.addEventListener('focus', refreshOnWake)
+    return () => {
+      document.removeEventListener('visibilitychange', refreshOnWake)
+      window.removeEventListener('focus', refreshOnWake)
+    }
+  }, [loadConversations, loadThread, userId])
 
   const submitSearch = (event) => {
     event.preventDefault()

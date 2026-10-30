@@ -69,7 +69,7 @@ export default function UserProfilePage() {
     setSigningOut(true)
     try {
       await logout()
-      navigate('/login/user-staff/', { replace: true })
+      navigate('/user', { replace: true })
     } finally {
       setSigningOut(false)
       setConfirmOpen(false)

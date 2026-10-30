@@ -23,8 +23,9 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/login/user-staff/" element={<UserLoginPage />} />
-      <Route path="/login/user/" element={<UserLoginPage />} />
+      <Route path="/user" element={<UserLoginPage />} />
+      <Route path="/login/user-staff/" element={<Navigate to="/user" replace />} />
+      <Route path="/login/user/" element={<Navigate to="/user" replace />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminShell />}>
           <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
@@ -40,7 +41,6 @@ export default function App() {
       </Route>
       <Route element={<UserProtectedRoute />}>
         <Route element={<UserShell />}>
-          <Route path="/user" element={<Navigate to="/user/payment-requests" replace />} />
           <Route path="/user/dashboard" element={<Navigate to="/user/payment-requests" replace />} />
           <Route path="/user/payment-requests" element={<UserPaymentRequestsPage />} />
           <Route path="/user/payment-requests/:id" element={<UserPaymentRequestDetailPage />} />
@@ -50,7 +50,7 @@ export default function App() {
           <Route path="/user/profile" element={<UserProfilePage />} />
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }

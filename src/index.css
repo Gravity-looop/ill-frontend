@@ -4,6 +4,14 @@
   --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Every Tailwind spacing, radius and text size is expressed in rem, so trimming
+   the root font size scales the whole UI at once. 90% makes 100% browser zoom
+   match the previous 90% look; a percentage (not px) keeps the user's own
+   font-size preference in the calculation. */
+html {
+  font-size: 90%;
+}
+
 :root {
   font-family: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   color: #0f172a;

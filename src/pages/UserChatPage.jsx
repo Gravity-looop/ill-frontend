@@ -6,8 +6,6 @@ import { notifyChatRead } from '../hooks/useChatUnread'
 import { ChatComposer, ChatMessageList, fetchLatestThread, mergeMessages } from '../components/ChatThread'
 import { ErrorState, IconButton, LoadingState, Notice } from '../components/ui'
 
-const POLL_MS = 20000
-
 export default function UserChatPage() {
   const { user } = useAuth()
   const [messages, setMessages] = useState([])
@@ -47,8 +45,16 @@ export default function UserChatPage() {
   }, [loadThread])
 
   useEffect(() => {
-    const timer = setInterval(() => loadThread({ silent: true }), POLL_MS)
-    return () => clearInterval(timer)
+    const refreshOnWake = () => {
+      if (document.hidden) return
+      loadThread({ silent: true })
+    }
+    document.addEventListener('visibilitychange', refreshOnWake)
+    window.addEventListener('focus', refreshOnWake)
+    return () => {
+      document.removeEventListener('visibilitychange', refreshOnWake)
+      window.removeEventListener('focus', refreshOnWake)
+    }
   }, [loadThread])
 
   const loadEarlier = async () => {

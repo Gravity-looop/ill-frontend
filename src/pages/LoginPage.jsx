@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { Button, Field, Input, Notice, Spinner } from '../components/ui'
 
 export default function LoginPage() {
-  const { isAdmin, loading, loginAdmin, user } = useAuth()
+  const { isAdmin, isUser, loading, loginAdmin, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [email, setEmail] = useState('')
@@ -15,8 +15,10 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (user && isAdmin) navigate(location.state?.from || '/admin/dashboard', { replace: true })
-  }, [isAdmin, location.state, navigate, user])
+    if (!user) return
+    if (isAdmin) navigate(location.state?.from || '/admin/dashboard', { replace: true })
+    else if (isUser) navigate('/user/payment-requests', { replace: true })
+  }, [isAdmin, isUser, location.state, navigate, user])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -78,7 +80,7 @@ export default function LoginPage() {
             </Field>
             <Button type="submit" size="lg" className="w-full" disabled={submitting || loading}>{submitting || loading ? <Spinner /> : null}{submitting || loading ? 'Signing in…' : 'Sign in'}{!submitting && !loading ? <ArrowRight size={17} /> : null}</Button>
           </form>
-           <p className="mt-8 text-center text-xs leading-5 text-slate-400">Access is limited to accounts with administrator permissions. Contact your system owner if you need an account.</p><p className="mt-4 text-center text-xs text-slate-400">Looking for your member account? <Link to="/login/user-staff/" className="font-bold text-indigo-600 hover:text-indigo-700">Open the user portal</Link></p>
+           <p className="mt-8 text-center text-xs leading-5 text-slate-400">Access is limited to accounts with administrator permissions. Contact your system owner if you need an account.</p><p className="mt-4 text-center text-xs text-slate-400">Looking for your member account? <Link to="/user" className="font-bold text-indigo-600 hover:text-indigo-700">Open the user portal</Link></p>
         </div>
       </section>
     </div>
